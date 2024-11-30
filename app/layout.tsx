@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     "A modern travel planner using Next.js 15, TailwindCSS, Prisma, and Clerk",
 };
 
-export default function RootLayout({
+export default function AppLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
