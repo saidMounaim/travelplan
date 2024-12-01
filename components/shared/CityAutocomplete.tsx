@@ -64,7 +64,7 @@ const CityAutocomplete = ({ query, setQuery }: CityAutocompleteProps) => {
         <PopoverTrigger className="w-full">
           <Input
             placeholder="Search for a location"
-            name="query"
+            name="destination"
             className="border-orange-200 focus:ring-orange-500"
             value={query}
             onChange={(e) => setQuery(e.target.value)}

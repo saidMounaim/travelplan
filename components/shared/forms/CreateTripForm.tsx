@@ -7,16 +7,44 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DollarSign, User, Users, Home, Briefcase } from "lucide-react";
 import CityAutocomplete from "../CityAutocomplete";
+import { addTrip } from "@/lib/actions/trip.actions";
+import { toast } from "sonner";
 
 const CreateTripForm = () => {
-  const [query, setQuery] = useState("");
+  const [destination, setDestination] = useState("");
   const [budget, setBudget] = useState("");
   const [travelWith, setTravelWith] = useState("");
+  const [totalDays, setTotalDays] = useState(0);
+  const [loading, setLoading] = useState(false);
+
+  const handleAddTrip = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      if (!destination || !budget || !travelWith || totalDays <= 0) {
+        toast.error("Please fill in all fields correctly before submitting.");
+        return;
+      }
+
+      await addTrip({ destination, totalDays, budget, travelWith });
+      toast.success("Trip added successfully!");
+    } catch (error) {
+      toast.error(
+        error instanceof Error && error.message
+          ? `Failed to submit form: ${error.message}`
+          : "An unexpected error occurred. Please try again later."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <form className="space-y-8">
+    <form onSubmit={handleAddTrip} className="space-y-8">
       <div className="space-y-2">
         <Label htmlFor="destination">Where do you want to go?</Label>
-        <CityAutocomplete query={query} setQuery={setQuery} />
+        <CityAutocomplete query={destination} setQuery={setDestination} />
       </div>
       <div className="space-y-2">
         <Label htmlFor="days">How many days?</Label>
@@ -26,6 +54,8 @@ const CreateTripForm = () => {
           placeholder="Number of days"
           min="1"
           className="border-orange-200 focus:ring-orange-500"
+          value={totalDays}
+          onChange={(e) => setTotalDays(Number(e.target.value))}
         />
       </div>
       <div className="space-y-2">
@@ -98,7 +128,7 @@ const CreateTripForm = () => {
         type="submit"
         className="w-full bg-orange-500 text-white hover:bg-orange-600"
       >
-        Create My Trip
+        {loading ? "Creating..." : "Create My Trip"}
       </Button>
     </form>
   );
