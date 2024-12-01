@@ -17,7 +17,7 @@ const CityAutocomplete = ({ query, setQuery }: CityAutocompleteProps) => {
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const debounce = (func: Function, delay: number) => {
+  const debounce = (func: any, delay: number) => {
     let timeoutId: NodeJS.Timeout;
     return (...args: any[]) => {
       clearTimeout(timeoutId);
