@@ -28,40 +28,43 @@ model User {
 }
 
 model Trip {
-  id     Int     @id @default(autoincrement())
+  id     String  @id @default(cuid())
   name   String
   budget String
   userId String
   user   User    @relation(fields: [userId], references: [clerkId])
   days   Day[]
   hotels Hotel[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Day {
-  id         Int        @id @default(autoincrement())
+  id         String     @id @default(cuid())
   title      String
-  tripId     Int
+  tripId     String
   trip       Trip       @relation(fields: [tripId], references: [id])
   activities Activity[]
 }
 
 model Activity {
-  id          Int     @id @default(autoincrement())
+  id          String  @id @default(cuid())
   time        String
   activity    String
   image       String?
   description String?
   duration    String?
-  dayId       Int
+  dayId       String
   day         Day     @relation(fields: [dayId], references: [id])
 }
 
 model Hotel {
-  id      Int    @id @default(autoincrement())
+  id      String @id @default(cuid())
   name    String
   address String
   price   String
   image   String
-  tripId  Int
+  tripId  String
   trip    Trip   @relation(fields: [tripId], references: [id])
 }

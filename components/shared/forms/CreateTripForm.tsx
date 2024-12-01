@@ -11,15 +11,17 @@ import { addTrip, saveTrip } from "@/lib/actions/trip.actions";
 import { toast } from "sonner";
 import { useAuth } from "@clerk/nextjs";
 import { Activities, Days, Hotels } from "@/lib/types";
+import { useRouter } from "next/navigation";
 
 const CreateTripForm = () => {
   const { userId } = useAuth();
-
+  console.log(userId);
   const [destination, setDestination] = useState("");
   const [budget, setBudget] = useState("");
   const [travelWith, setTravelWith] = useState("");
   const [totalDays, setTotalDays] = useState(0);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleAddTrip = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -31,7 +33,7 @@ const CreateTripForm = () => {
         return;
       }
 
-      const trip = await addTrip({
+      let trip = await addTrip({
         destination,
         totalDays,
         budget,
@@ -43,13 +45,13 @@ const CreateTripForm = () => {
         budget: trip.budget,
         userId: userId!,
         days: trip.days.map((day: Days) => ({
-          title: `Day ${day.title}`,
+          title: day.title,
           activities: day.activities.map((attraction: Activities) => ({
             time: attraction.time,
             activity: attraction.activity,
             image: attraction.image,
             description: attraction.description || "",
-            duration: "",
+            duration: attraction.duration,
           })),
         })),
         hotels: trip.hotels.map((hotel: Hotels) => ({
@@ -60,8 +62,9 @@ const CreateTripForm = () => {
         })),
       };
 
-      await saveTrip(tripToSave);
+      trip = await saveTrip(tripToSave);
       toast.success("Trip added successfully!");
+      router.push(`/trip/${trip.id}`);
     } catch (error) {
       toast.error(
         error instanceof Error && error.message

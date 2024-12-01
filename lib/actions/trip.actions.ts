@@ -97,11 +97,33 @@ export async function saveTrip(tripData: TripData) {
       },
     });
 
-    return { success: true };
+    return trip;
   } catch (error) {
     console.error("Error saving trip to database:", error);
     throw error;
-  } finally {
-    await prisma.$disconnect();
+  }
+}
+
+export async function getTripById(userId: string, tripId: string) {
+  try {
+    const user = await prisma.user.findUnique({ where: { clerkId: userId } });
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const trip = await prisma.trip.findFirst({
+      where: { userId: user.clerkId, id: tripId },
+      include: {
+        hotels: true,
+        days: {
+          include: {
+            activities: true,
+          },
+        },
+      },
+    });
+    return trip;
+  } catch (error) {
+    console.error("Error fetching trip:", error);
+    throw error;
   }
 }
