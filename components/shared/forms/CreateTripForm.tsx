@@ -7,10 +7,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DollarSign, User, Users, Home, Briefcase } from "lucide-react";
 import CityAutocomplete from "../CityAutocomplete";
-import { addTrip } from "@/lib/actions/trip.actions";
+import { addTrip, saveTrip } from "@/lib/actions/trip.actions";
 import { toast } from "sonner";
+import { useAuth } from "@clerk/nextjs";
+import { Activities, Days, Hotels } from "@/lib/types";
 
 const CreateTripForm = () => {
+  const { userId } = useAuth();
+
   const [destination, setDestination] = useState("");
   const [budget, setBudget] = useState("");
   const [travelWith, setTravelWith] = useState("");
@@ -27,8 +31,36 @@ const CreateTripForm = () => {
         return;
       }
 
-      const res = await addTrip({ destination, totalDays, budget, travelWith });
-      console.log(res);
+      const trip = await addTrip({
+        destination,
+        totalDays,
+        budget,
+        travelWith,
+      });
+
+      const tripToSave = {
+        name: trip.trip_name,
+        budget: trip.budget,
+        userId: userId!,
+        days: trip.days.map((day: Days) => ({
+          title: `Day ${day.title}`,
+          activities: day.activities.map((attraction: Activities) => ({
+            time: attraction.time,
+            activity: attraction.activity,
+            image: attraction.image,
+            description: attraction.description || "",
+            duration: "",
+          })),
+        })),
+        hotels: trip.hotels.map((hotel: Hotels) => ({
+          name: hotel.name,
+          address: hotel.address,
+          price: hotel.price.toString(),
+          image: hotel.image,
+        })),
+      };
+
+      await saveTrip(tripToSave);
       toast.success("Trip added successfully!");
     } catch (error) {
       toast.error(
@@ -128,8 +160,9 @@ const CreateTripForm = () => {
       <Button
         type="submit"
         className="w-full bg-orange-500 text-white hover:bg-orange-600"
+        disabled={loading}
       >
-        {loading ? "Creating..." : "Create My Trip"}
+        {loading ? "Planning Your Adventure..." : "Plan My Trip"}
       </Button>
     </form>
   );

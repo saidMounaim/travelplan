@@ -32,7 +32,7 @@ model Trip {
   name   String
   budget String
   userId String
-  user   User    @relation(fields: [userId], references: [id])
+  user   User    @relation(fields: [userId], references: [clerkId])
   days   Day[]
   hotels Hotel[]
 }

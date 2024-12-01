@@ -1,13 +1,9 @@
 "use server";
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import prisma from "../prisma";
+import { addTripProps, TripData } from "../types";
 
-interface addTripProps {
-  destination: string;
-  totalDays: number;
-  budget: string;
-  travelWith: string;
-}
 export async function addTrip({
   destination,
   totalDays,
@@ -66,5 +62,46 @@ export async function addTrip({
         : "An unexpected error occurred. Please try again later.";
 
     throw new Error(`Failed to add trip: ${errorMessage}`);
+  }
+}
+
+export async function saveTrip(tripData: TripData) {
+  try {
+    const trip = await prisma.trip.create({
+      data: {
+        name: tripData.name,
+        budget: tripData.budget,
+        userId: tripData.userId,
+        days: {
+          create: tripData.days.map((day) => ({
+            title: day.title,
+            activities: {
+              create: day.activities.map((activity) => ({
+                time: activity.time,
+                activity: activity.activity,
+                image: activity.image,
+                description: activity.description,
+                duration: activity.duration,
+              })),
+            },
+          })),
+        },
+        hotels: {
+          create: tripData.hotels.map((hotel) => ({
+            name: hotel.name,
+            address: hotel.address,
+            price: hotel.price,
+            image: hotel.image,
+          })),
+        },
+      },
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error saving trip to database:", error);
+    throw error;
+  } finally {
+    await prisma.$disconnect();
   }
 }
