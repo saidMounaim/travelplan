@@ -6,15 +6,13 @@ import { auth } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
 import React from "react";
 
-interface SearchParams {
-  params: {
-    id: string;
-  };
+interface pageParams {
+  params: Promise<{ id: string }>;
 }
 
-const TripDetailsPage = async ({ params }: SearchParams) => {
+const TripDetailsPage = async ({ params }: pageParams) => {
   const { userId } = await auth();
-  const { id } = await params;
+  const id = (await params).id;
 
   const tripData = await getTripById(userId!, id);
 
