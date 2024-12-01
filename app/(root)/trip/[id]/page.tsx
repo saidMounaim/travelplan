@@ -3,6 +3,7 @@ import HotelCard from "@/components/shared/cards/HotelCard";
 import { getTripById } from "@/lib/actions/trip.actions";
 import { Activities, Days, Hotels } from "@/lib/types";
 import { auth } from "@clerk/nextjs/server";
+import { Trip } from "@prisma/client";
 import { notFound } from "next/navigation";
 import React from "react";
 
@@ -44,7 +45,7 @@ const TripDetailsPage = async ({ params }: pageParams) => {
             Itinerary
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {tripData?.days.map((day: Days, index: number) => (
+            {tripData?.days.map((day: any, index: number) => (
               <div key={index} className="space-y-4">
                 <h3 className="text-xl font-semibold text-orange-500">
                   Day {index + 1}: {day.title}
