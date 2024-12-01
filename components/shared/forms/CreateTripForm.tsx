@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation";
 
 const CreateTripForm = () => {
   const { userId } = useAuth();
-  console.log(userId);
+
   const [destination, setDestination] = useState("");
   const [budget, setBudget] = useState("");
   const [travelWith, setTravelWith] = useState("");
@@ -39,7 +39,6 @@ const CreateTripForm = () => {
         budget,
         travelWith,
       });
-
       const tripToSave = {
         name: trip.trip_name,
         budget: trip.budget,

@@ -3,6 +3,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import prisma from "../prisma";
 import { addTripProps, TripData } from "../types";
+import { revalidatePath } from "next/cache";
 
 export async function addTrip({
   destination,
@@ -125,9 +126,9 @@ export async function getAllTripByUserId(userId: string) {
   try {
     const user = await prisma.user.findUnique({ where: { clerkId: userId } });
     if (!user) {
-      return { error: "User not found" };
+      return;
     }
-    const trip = await prisma.trip.findMany({
+    const trips = await prisma.trip.findMany({
       where: { userId: user.clerkId },
       include: {
         hotels: true,
@@ -138,7 +139,20 @@ export async function getAllTripByUserId(userId: string) {
         },
       },
     });
-    return trip;
+    return trips;
+  } catch (error) {
+    console.error("Error fetching trips:", error);
+  }
+}
+
+export async function deleteTripByUserId(userId: string, tripId: string) {
+  try {
+    const user = await prisma.user.findUnique({ where: { clerkId: userId } });
+    if (!user) {
+      return;
+    }
+    await prisma.trip.delete({ where: { id: tripId } });
+    revalidatePath("/my-trip");
   } catch (error) {
     console.error("Error fetching trips:", error);
   }

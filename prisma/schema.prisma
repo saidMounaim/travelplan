@@ -44,7 +44,7 @@ model Day {
   id         String     @id @default(cuid())
   title      String
   tripId     String
-  trip       Trip       @relation(fields: [tripId], references: [id])
+  trip       Trip       @relation(fields: [tripId], references: [id], onDelete: Cascade)
   activities Activity[]
 }
 
@@ -56,7 +56,7 @@ model Activity {
   description String?
   duration    String?
   dayId       String
-  day         Day     @relation(fields: [dayId], references: [id])
+  day         Day     @relation(fields: [dayId], references: [id], onDelete: Cascade)
 }
 
 model Hotel {
@@ -66,5 +66,5 @@ model Hotel {
   price   String
   image   String
   tripId  String
-  trip    Trip   @relation(fields: [tripId], references: [id])
+  trip    Trip   @relation(fields: [tripId], references: [id], onDelete: Cascade)
 }
