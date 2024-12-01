@@ -24,4 +24,44 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  Trip      Trip[]
+}
+
+model Trip {
+  id     Int     @id @default(autoincrement())
+  name   String
+  budget String
+  userId String
+  user   User    @relation(fields: [userId], references: [id])
+  days   Day[]
+  hotels Hotel[]
+}
+
+model Day {
+  id         Int        @id @default(autoincrement())
+  title      String
+  tripId     Int
+  trip       Trip       @relation(fields: [tripId], references: [id])
+  activities Activity[]
+}
+
+model Activity {
+  id          Int     @id @default(autoincrement())
+  time        String
+  activity    String
+  image       String?
+  description String?
+  duration    String?
+  dayId       Int
+  day         Day     @relation(fields: [dayId], references: [id])
+}
+
+model Hotel {
+  id      Int    @id @default(autoincrement())
+  name    String
+  address String
+  price   String
+  image   String
+  tripId  Int
+  trip    Trip   @relation(fields: [tripId], references: [id])
 }

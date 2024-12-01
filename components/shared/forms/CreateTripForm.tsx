@@ -27,7 +27,8 @@ const CreateTripForm = () => {
         return;
       }
 
-      await addTrip({ destination, totalDays, budget, travelWith });
+      const res = await addTrip({ destination, totalDays, budget, travelWith });
+      console.log(res);
       toast.success("Trip added successfully!");
     } catch (error) {
       toast.error(

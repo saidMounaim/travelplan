@@ -1,5 +1,7 @@
 "use server";
 
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
 interface addTripProps {
   destination: string;
   totalDays: number;
@@ -12,12 +14,51 @@ export async function addTrip({
   budget,
   travelWith,
 }: addTripProps) {
+  const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY!);
+
+  const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+  const prompt = `Generate a ${totalDays}-day travel itinerary for a ${budget} budget trip in ${destination}. This trip is for ${travelWith}, including top attractions, their timings, image URLs, and nearby dining options. Also include hotel recommendations with details such as hotel name, address, price, and image URL. Present the itinerary in JSON format as shown below:
+
+  {
+    "trip_name": "",
+    "budget": "",
+    "days": [
+      {
+        "day": "",
+        "title": "",
+        "activities": [
+          {
+            "time": "",
+            "activity": "",
+            "image": "",
+            "description": "",
+            "duration": ""
+          }
+        ]
+      }
+    ],
+    "hotels": [
+      {
+        "name": "",
+        "address": "",
+        "price": "",
+        "image": ""
+      }
+    ]
+  }
+  `;
   try {
-    console.log("Adding trip with the following details:");
-    console.log(`Destination: ${destination}`);
-    console.log(`Total Days: ${totalDays}`);
-    console.log(`Budget: ${budget}`);
-    console.log(`Travel With: ${travelWith}`);
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+
+    const jsonMatch = text.match(/```json([\s\S]*?)```/);
+    if (jsonMatch) {
+      return JSON.parse(jsonMatch[1]);
+    }
+    const cleanedText = text.replace(/```json|```/g, "").trim();
+    return JSON.parse(cleanedText);
   } catch (error) {
     const errorMessage =
       error instanceof Error && error.message
