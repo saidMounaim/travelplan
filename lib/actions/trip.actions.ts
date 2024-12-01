@@ -56,12 +56,7 @@ export async function addTrip({
     const cleanedText = text.replace(/```json|```/g, "").trim();
     return JSON.parse(cleanedText);
   } catch (error) {
-    const errorMessage =
-      error instanceof Error && error.message
-        ? error.message
-        : "An unexpected error occurred. Please try again later.";
-
-    throw new Error(`Failed to add trip: ${errorMessage}`);
+    console.error("Error to generate a trip:", error);
   }
 }
 
@@ -100,7 +95,6 @@ export async function saveTrip(tripData: TripData) {
     return trip;
   } catch (error) {
     console.error("Error saving trip to database:", error);
-    throw error;
   }
 }
 
@@ -108,7 +102,7 @@ export async function getTripById(userId: string, tripId: string) {
   try {
     const user = await prisma.user.findUnique({ where: { clerkId: userId } });
     if (!user) {
-      throw new Error("User not found");
+      return;
     }
     const trip = await prisma.trip.findFirst({
       where: { userId: user.clerkId, id: tripId },
@@ -124,6 +118,28 @@ export async function getTripById(userId: string, tripId: string) {
     return trip;
   } catch (error) {
     console.error("Error fetching trip:", error);
-    throw error;
+  }
+}
+
+export async function getAllTripByUserId(userId: string) {
+  try {
+    const user = await prisma.user.findUnique({ where: { clerkId: userId } });
+    if (!user) {
+      return { error: "User not found" };
+    }
+    const trip = await prisma.trip.findMany({
+      where: { userId: user.clerkId },
+      include: {
+        hotels: true,
+        days: {
+          include: {
+            activities: true,
+          },
+        },
+      },
+    });
+    return trip;
+  } catch (error) {
+    console.error("Error fetching trips:", error);
   }
 }

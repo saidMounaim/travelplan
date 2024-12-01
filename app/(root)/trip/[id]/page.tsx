@@ -1,9 +1,8 @@
 import ActivityCard from "@/components/shared/cards/ActivityCard";
 import HotelCard from "@/components/shared/cards/HotelCard";
 import { getTripById } from "@/lib/actions/trip.actions";
-import { Activities, Days, Hotels } from "@/lib/types";
+import { Activities, Hotels } from "@/lib/types";
 import { auth } from "@clerk/nextjs/server";
-import { Trip } from "@prisma/client";
 import { notFound } from "next/navigation";
 import React from "react";
 
