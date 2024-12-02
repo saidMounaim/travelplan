@@ -55,7 +55,7 @@ export async function addTrip({
       return JSON.parse(jsonMatch[1]);
     }
     const cleanedText = text.replace(/```json|```/g, "").trim();
-    return JSON.parse(cleanedText);
+    return { response, jsonMatch, cleanedText };
   } catch (error) {
     console.error("Error to generate a trip:", error);
   }
