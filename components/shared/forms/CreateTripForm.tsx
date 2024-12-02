@@ -33,7 +33,7 @@ const CreateTripForm = () => {
         return;
       }
 
-      const trip = await addTrip({
+      let trip = await addTrip({
         destination,
         totalDays,
         budget,
@@ -42,32 +42,33 @@ const CreateTripForm = () => {
       console.log(trip);
 
       if (trip?.trip_name) {
-        // const tripToSave = {
-        //   name: trip.trip_name,
-        //   budget: trip.budget,
-        //   userId: userId!,
-        //   days: trip.days.map((day: Days) => ({
-        //     title: day.title,
-        //     activities: day.activities.map((attraction: Activities) => ({
-        //       time: attraction.time,
-        //       activity: attraction.activity,
-        //       image: attraction.image,
-        //       description: attraction.description || "",
-        //       duration: attraction.duration,
-        //     })),
-        //   })),
-        //   hotels: trip.hotels.map((hotel: Hotels) => ({
-        //     name: hotel.name,
-        //     address: hotel.address,
-        //     price: hotel.price.toString(),
-        //     image: hotel.image,
-        //   })),
-        // };
-        // trip = await saveTrip(tripToSave);
-        // toast.success("Trip added successfully!");
-        // router.push(`/trip/${trip.id}`);
+        const tripToSave = {
+          name: trip.trip_name,
+          budget: trip.budget,
+          userId: userId!,
+          days: trip.days.map((day: Days) => ({
+            title: day.title,
+            activities: day.activities.map((attraction: Activities) => ({
+              time: attraction.time,
+              activity: attraction.activity,
+              image: attraction.image,
+              description: attraction.description || "",
+              duration: attraction.duration,
+            })),
+          })),
+          hotels: trip.hotels.map((hotel: Hotels) => ({
+            name: hotel.name,
+            address: hotel.address,
+            price: hotel.price.toString(),
+            image: hotel.image,
+          })),
+        };
+
+        trip = await saveTrip(tripToSave);
+        toast.success("Trip added successfully!");
+        router.push(`/trip/${trip.id}`);
       } else {
-        // console.log(trip);
+        console.log(trip);
       }
     } catch (error) {
       toast.error(
