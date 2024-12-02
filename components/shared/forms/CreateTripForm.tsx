@@ -39,31 +39,34 @@ const CreateTripForm = () => {
         budget,
         travelWith,
       });
-      const tripToSave = {
-        name: trip.trip_name,
-        budget: trip.budget,
-        userId: userId!,
-        days: trip.days.map((day: Days) => ({
-          title: day.title,
-          activities: day.activities.map((attraction: Activities) => ({
-            time: attraction.time,
-            activity: attraction.activity,
-            image: attraction.image,
-            description: attraction.description || "",
-            duration: attraction.duration,
-          })),
-        })),
-        hotels: trip.hotels.map((hotel: Hotels) => ({
-          name: hotel.name,
-          address: hotel.address,
-          price: hotel.price.toString(),
-          image: hotel.image,
-        })),
-      };
 
-      trip = await saveTrip(tripToSave);
-      toast.success("Trip added successfully!");
-      router.push(`/trip/${trip.id}`);
+      if (trip?.trip_name) {
+        const tripToSave = {
+          name: trip.trip_name,
+          budget: trip.budget,
+          userId: userId!,
+          days: trip.days.map((day: Days) => ({
+            title: day.title,
+            activities: day.activities.map((attraction: Activities) => ({
+              time: attraction.time,
+              activity: attraction.activity,
+              image: attraction.image,
+              description: attraction.description || "",
+              duration: attraction.duration,
+            })),
+          })),
+          hotels: trip.hotels.map((hotel: Hotels) => ({
+            name: hotel.name,
+            address: hotel.address,
+            price: hotel.price.toString(),
+            image: hotel.image,
+          })),
+        };
+
+        trip = await saveTrip(tripToSave);
+        toast.success("Trip added successfully!");
+        router.push(`/trip/${trip.id}`);
+      }
     } catch (error) {
       toast.error(
         error instanceof Error && error.message
