@@ -39,7 +39,6 @@ const CreateTripForm = () => {
         budget,
         travelWith,
       });
-      console.log(trip);
 
       if (trip?.trip_name) {
         const tripToSave = {
@@ -67,8 +66,6 @@ const CreateTripForm = () => {
         trip = await saveTrip(tripToSave);
         toast.success("Trip added successfully!");
         router.push(`/trip/${trip.id}`);
-      } else {
-        console.log(trip);
       }
     } catch (error) {
       toast.error(
