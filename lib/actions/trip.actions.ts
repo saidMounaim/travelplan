@@ -58,7 +58,6 @@ export async function addTrip({
     return JSON.parse(cleanedText);
   } catch (error) {
     console.error("Error to generate a trip:", error);
-    return error;
   }
 }
 
