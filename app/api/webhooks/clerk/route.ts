@@ -4,6 +4,7 @@ import { WebhookEvent } from "@clerk/nextjs/server";
 import { clerkClient } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { createUser } from "@/lib/actions/user.actions";
 
 export async function POST(req: Request) {
   const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
@@ -36,7 +37,6 @@ export async function POST(req: Request) {
 
   let evt: WebhookEvent;
 
-  // Verify payload with headers
   try {
     evt = wh.verify(body, {
       "svix-id": svix_id,
@@ -50,11 +50,8 @@ export async function POST(req: Request) {
     });
   }
 
-  // Do something with payload
-  // For this guide, log payload to console
-
   const eventType = evt.type;
-
+  console.log(eventType);
   const client = await clerkClient();
 
   if (eventType === "user.created") {
@@ -70,9 +67,7 @@ export async function POST(req: Request) {
       image: image_url,
     };
 
-    const newUser = await prisma.user.create({
-      data: user,
-    });
+    const newUser = await createUser(user);
 
     if (newUser) {
       await client.users.updateUserMetadata(id, {
