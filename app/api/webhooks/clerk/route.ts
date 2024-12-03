@@ -4,7 +4,7 @@ import { WebhookEvent } from "@clerk/nextjs/server";
 import { clerkClient } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { createUser } from "@/lib/actions/user.actions";
+import { createUser, deleteUser, updateUser } from "@/lib/actions/user.actions";
 
 export async function POST(req: Request) {
   const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
@@ -83,14 +83,6 @@ export async function POST(req: Request) {
   if (eventType === "user.updated") {
     const { id, image_url, first_name, last_name, username } = evt.data;
 
-    const userToUpdate = await prisma.user.findUnique({
-      where: { clerkId: id },
-    });
-
-    if (!userToUpdate) {
-      throw new Error("User not found");
-    }
-
     const user = {
       firstName: first_name || "",
       lastName: last_name || "",
@@ -98,10 +90,7 @@ export async function POST(req: Request) {
       image: image_url,
     };
 
-    const updatedUser = await prisma.user.update({
-      where: { clerkId: userToUpdate.clerkId },
-      data: user,
-    });
+    const updatedUser = await updateUser(user, id);
 
     return NextResponse.json({ message: "OK", user: updatedUser });
   }
@@ -109,19 +98,9 @@ export async function POST(req: Request) {
   if (eventType === "user.deleted") {
     const { id } = evt.data;
 
-    const userToDelete = await prisma.user.findUnique({
-      where: { clerkId: id },
-    });
+    await deleteUser(id!);
 
-    if (!userToDelete) {
-      throw new Error("User not found");
-    }
-
-    const deletedUser = await prisma.user.delete({
-      where: { clerkId: userToDelete.clerkId },
-    });
-
-    return NextResponse.json({ message: "OK", user: deletedUser });
+    return NextResponse.json({ message: "OK" });
   }
 
   return new Response("", { status: 200 });
