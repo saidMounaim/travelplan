@@ -67,7 +67,7 @@ export async function POST(req: Request) {
     const newUser = await createUser(user);
 
     if (newUser) {
-      await client.users.updateUserMetadata(id, {
+      await client.users.updateUserMetadata(payload.data.id, {
         publicMetadata: {
           userId: newUser.id,
         },
