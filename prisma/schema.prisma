@@ -20,6 +20,7 @@ model User {
   lastName  String?
   email     String  @unique
   image     String?
+  credit    Int     @default(1)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

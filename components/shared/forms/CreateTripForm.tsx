@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { useAuth } from "@clerk/nextjs";
 import { Activities, Days, Hotels } from "@/lib/types";
 import { useRouter } from "next/navigation";
+import { updateCredit } from "@/lib/actions/user.actions";
 
 const CreateTripForm = () => {
   const { userId } = useAuth();
@@ -64,6 +65,7 @@ const CreateTripForm = () => {
         };
 
         trip = await saveTrip(tripToSave);
+        await updateCredit(userId!);
         toast.success("Trip added successfully!");
         router.push(`/trip/${trip.id}`);
       }

@@ -15,9 +15,17 @@ export async function addTrip({
     apiKey: process.env.OPENAI_API_KEY,
   });
 
-  const prompt = `Generate a ${totalDays}-day travel itinerary for a ${budget} budget trip in ${destination}. This trip is for ${travelWith}, including top attractions, their timings, image URLs, and nearby dining options. Also include hotel recommendations with details such as hotel name, address, price, and image URL. Present the itinerary in JSON format as shown below:
-
-  {
+  const prompt = `"Generate a ${totalDays}-day travel itinerary for a ${budget} budget trip in ${destination}. The trip is planned for ${travelWith} and should include:
+  Top attractions with precise timings, valid image URLs, descriptions, and their durations.
+Nearby dining options for each attraction, including names, cuisines, price ranges, and valid image URLs.
+Hotel recommendations with the following details:
+Hotel name
+Address
+Price per night
+Valid image URL
+Customer rating
+Ensure the image URLs are reliable and functional by testing for accuracy. Present the output in JSON format as shown below:
+ {
     "trip_name": "",
     "budget": "",
     "days": [
@@ -43,7 +51,10 @@ export async function addTrip({
         "image": ""
       }
     ]
-  }`;
+  };
+Ensure all images come from reputable sources and are relevant to the specified destinations, attractions, and hotels.
+Avoid broken links (404 errors) by verifying each image before including it in the itinerary.
+If images are not available, provide a placeholder text indicating the absence of an image.`;
 
   try {
     const completion = await openai.chat.completions.create({

@@ -1,5 +1,6 @@
 "use server";
 
+import { auth } from "@clerk/nextjs/server";
 import prisma from "../prisma";
 
 interface createUserProps {
@@ -16,6 +17,30 @@ interface updateUserProps {
   image?: string;
 }
 
+const MAX_RETRIES = 5;
+const RETRY_DELAY = 1000;
+
+export async function getCurrentUser(retryCount = 0) {
+  const { userId } = await auth();
+  if (!userId) {
+    return null;
+  }
+
+  try {
+    const user = await prisma.user.findUnique({ where: { clerkId: userId } });
+    if (!user) {
+      if (retryCount < MAX_RETRIES) {
+        await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
+        return getCurrentUser(retryCount + 1);
+      }
+      throw new Error("User not found after maximum retries");
+    }
+    return user;
+  } catch (error) {
+    console.error("Error getting current user:", error);
+    return null;
+  }
+}
 export async function createUser(userDetails: createUserProps) {
   try {
     const newUser = await prisma.user.create({
@@ -62,5 +87,25 @@ export async function deleteUser(userId: string) {
     });
   } catch (error) {
     console.error("Error to delete user:", error);
+  }
+}
+
+export async function updateCredit(userId: string) {
+  try {
+    const user = await prisma.user.findUnique({ where: { clerkId: userId } });
+    if (!user) {
+      throw new Error("User not found");
+    }
+    if (user.credit && user.credit > 0) {
+      const updatedUser = await prisma.user.update({
+        where: { clerkId: userId },
+        data: { credit: user.credit - 1 },
+      });
+      return updatedUser;
+    } else {
+      throw new Error("User does not have enough credits to decrement");
+    }
+  } catch (error) {
+    console.error("Error to update credit:", error);
   }
 }

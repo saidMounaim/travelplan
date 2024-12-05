@@ -4,8 +4,12 @@ import React from "react";
 import { Button } from "../ui/button";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 import UserMenu from "./UserMenu";
+import { auth } from "@clerk/nextjs/server";
+import { getCurrentUser } from "@/lib/actions/user.actions";
 
-const Header = () => {
+const Header = async () => {
+  const currentUser = await getCurrentUser();
+
   return (
     <header className="px-4 lg:px-6 h-14 flex items-center border-b">
       <div className="flex justify-between items-center container mx-auto sm:px-4">
@@ -22,7 +26,10 @@ const Header = () => {
             </Button>
           </SignedOut>
           <SignedIn>
-            <UserMenu />
+            <div className="flex items-center gap-4">
+              <h3>{currentUser?.credit} Credit</h3>
+              <UserMenu />
+            </div>
           </SignedIn>
         </nav>
       </div>
