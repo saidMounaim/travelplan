@@ -1,6 +1,6 @@
 # AI Travel Planner
 
-AI Travel Planner app built with Next.js 15, Tailwind CSS, Prisma, Google AI Studio, and Clerk. Features include user sign-up, sign-in, generating travel plans, viewing all travel plans, and deleting trips. Open to contributions during development.
+AI Travel Planner app built with Next.js 15, Tailwind CSS, Prisma, Open AI, and Clerk. Features include user sign-up, sign-in, generating travel plans, viewing all travel plans, and deleting trips. Open to contributions during development.
 
 ## Getting Started
 
@@ -23,7 +23,7 @@ NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/
 WEBHOOK_SECRET=
 DATABASE_URL=
 HERE_API_KEY=
-GOOGLE_AI_API_KEY=
+OPENAI_API_KEY=
 ```
 
 ## Built With
@@ -32,7 +32,7 @@ GOOGLE_AI_API_KEY=
 - [TailwindCSS](https://tailwindcss.com/)
 - [TypeScript](https://www.typescriptlang.org/)
 - [Shadcn/ui](https://ui.shadcn.com/)
-- [Google AI Studio](https://ai.google.dev/)
+- [Open AI](https://platform.openai.com/docs/overview)
 - [Clerk](https://clerk.com/)
 
 ## Contribution
