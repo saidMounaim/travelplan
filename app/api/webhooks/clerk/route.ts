@@ -3,7 +3,6 @@ import { Webhook } from "svix";
 import { WebhookEvent } from "@clerk/nextjs/server";
 import { clerkClient } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
 import { createUser, deleteUser, updateUser } from "@/lib/actions/user.actions";
 
 export async function POST(req: Request) {
@@ -51,20 +50,18 @@ export async function POST(req: Request) {
   }
 
   const eventType = evt.type;
-  console.log(eventType);
+
   const client = await clerkClient();
 
   if (eventType === "user.created") {
-    const { id, email_addresses, image_url, first_name, last_name, username } =
-      evt.data;
+    const { id, email_addresses, image_url, first_name, last_name } = evt.data;
 
     const user = {
       clerkId: id,
       email: email_addresses[0].email_address,
-      username: username || "",
-      firstName: first_name || "",
-      lastName: last_name || "",
-      image: image_url,
+      firstName: first_name!,
+      lastName: last_name!,
+      image: image_url!,
     };
 
     const newUser = await createUser(user);
@@ -84,10 +81,9 @@ export async function POST(req: Request) {
     const { id, image_url, first_name, last_name, username } = evt.data;
 
     const user = {
-      firstName: first_name || "",
-      lastName: last_name || "",
-      username: username || "",
-      image: image_url,
+      firstName: first_name!,
+      lastName: last_name!,
+      image: image_url!,
     };
 
     const updatedUser = await updateUser(user, id);

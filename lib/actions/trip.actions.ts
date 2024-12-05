@@ -1,9 +1,9 @@
 "use server";
 
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import prisma from "../prisma";
 import { addTripProps, TripData } from "../types";
 import { revalidatePath } from "next/cache";
+import { OpenAI } from "openai";
 
 export async function addTrip({
   destination,
@@ -11,9 +11,9 @@ export async function addTrip({
   budget,
   travelWith,
 }: addTripProps) {
-  const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY!);
-
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
 
   const prompt = `Generate a ${totalDays}-day travel itinerary for a ${budget} budget trip in ${destination}. This trip is for ${travelWith}, including top attractions, their timings, image URLs, and nearby dining options. Also include hotel recommendations with details such as hotel name, address, price, and image URL. Present the itinerary in JSON format as shown below:
 
@@ -43,21 +43,32 @@ export async function addTrip({
         "image": ""
       }
     ]
-  }
-  `;
+  }`;
+
   try {
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+    const completion = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [
+        { role: "system", content: "You are a travel assistant." },
+        { role: "user", content: prompt },
+      ],
+    });
+
+    const text = completion.choices[0].message?.content;
+
+    if (!text) {
+      throw new Error("No response from OpenAI");
+    }
 
     const jsonMatch = text.match(/```json([\s\S]*?)```/);
     if (jsonMatch) {
       return JSON.parse(jsonMatch[1]);
     }
+
     const cleanedText = text.replace(/```json|```/g, "").trim();
     return JSON.parse(cleanedText);
   } catch (error) {
-    console.error("Error to generate a trip:", error);
+    console.error("Error generating trip:", error);
   }
 }
 

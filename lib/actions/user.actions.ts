@@ -5,17 +5,15 @@ import prisma from "../prisma";
 interface createUserProps {
   clerkId: string;
   email: string;
-  username: string;
-  firstName: string;
-  lastName: string;
-  image: string;
+  firstName?: string;
+  lastName?: string;
+  image?: string;
 }
 
 interface updateUserProps {
-  username: string;
-  firstName: string;
-  lastName: string;
-  image: string;
+  firstName?: string;
+  lastName?: string;
+  image?: string;
 }
 
 export async function createUser(userDetails: createUserProps) {
