@@ -12,7 +12,7 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: "Travelplan",
+  title: "AI Travel Planner",
   description:
     "A modern travel planner using Next.js 15, TailwindCSS, Prisma, and Clerk",
 };

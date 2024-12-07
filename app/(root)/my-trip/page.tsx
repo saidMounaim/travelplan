@@ -4,6 +4,12 @@ import { getAllTripByUserId } from "@/lib/actions/trip.actions";
 import { auth } from "@clerk/nextjs/server";
 import React, { Suspense } from "react";
 
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "AI Travel Planner | My Trip",
+};
+
 const MyTripPage = async () => {
   const { userId } = await auth();
   const trips: any = await getAllTripByUserId(userId!);

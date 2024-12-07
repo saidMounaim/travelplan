@@ -2,6 +2,12 @@ import CreateTripForm from "@/components/shared/forms/CreateTripForm";
 import { getCurrentUser } from "@/lib/actions/user.actions";
 import React from "react";
 
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "AI Travel Planner | Create Trip",
+};
+
 const CreateTripPage = async () => {
   const currentUser = await getCurrentUser();
   return (

@@ -7,8 +7,23 @@ import { auth } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
 import React, { Suspense } from "react";
 
+import { Metadata } from "next";
+
 interface pageParams {
   params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({
+  params,
+}: pageParams): Promise<Metadata> {
+  const { userId } = await auth();
+  const id = (await params).id;
+
+  const tripData = await getTripById(userId!, id);
+
+  return {
+    title: `AI Travel Planner | ${tripData?.name}`,
+  };
 }
 
 const TripDetailsPage = async ({ params }: pageParams) => {
