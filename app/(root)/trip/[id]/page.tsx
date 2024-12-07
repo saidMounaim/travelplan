@@ -1,10 +1,11 @@
-import ActivityCard from "@/components/shared/cards/ActivityCard";
-import HotelCard from "@/components/shared/cards/HotelCard";
+import AllHotels from "@/components/shared/Hotels";
+import Itinerary from "@/components/shared/Itinerary";
+import SkeletonCard from "@/components/shared/SkeletonCard";
 import { getTripById } from "@/lib/actions/trip.actions";
-import { Activities, Hotels } from "@/lib/types";
+import { Days, Hotels } from "@/lib/types";
 import { auth } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
-import React from "react";
+import React, { Suspense } from "react";
 
 interface pageParams {
   params: Promise<{ id: string }>;
@@ -32,31 +33,22 @@ const TripDetailsPage = async ({ params }: pageParams) => {
           <h2 className="text-2xl font-semibold text-orange-600 mb-6">
             Recommended Hotels
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {tripData?.hotels.map((hotel: Hotels, index: number) => (
-              <HotelCard key={index} hotel={hotel} />
-            ))}
-          </div>
+          <Suspense fallback={<SkeletonCard />}>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <AllHotels hotels={tripData?.hotels as Hotels[]} />
+            </div>
+          </Suspense>
         </section>
 
         <section>
           <h2 className="text-2xl font-semibold text-orange-600 mb-6">
             Itinerary
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {tripData?.days.map((day: any, index: number) => (
-              <div key={index} className="space-y-4">
-                <h3 className="text-xl font-semibold text-orange-500">
-                  Day {index + 1}: {day.title}
-                </h3>
-                {day.activities.map(
-                  (activity: Activities, actIndex: number) => (
-                    <ActivityCard key={actIndex} activity={activity} />
-                  )
-                )}
-              </div>
-            ))}
-          </div>
+          <Suspense fallback={<SkeletonCard />}>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <Itinerary days={tripData?.days as Days[]} />
+            </div>
+          </Suspense>
         </section>
       </div>
     </main>
