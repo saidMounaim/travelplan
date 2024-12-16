@@ -15,46 +15,76 @@ export async function addTrip({
     apiKey: process.env.OPENAI_API_KEY,
   });
 
-  const prompt = `"Generate a ${totalDays}-day travel itinerary for a ${budget} budget trip in ${destination}. The trip is planned for ${travelWith} and should include:
-  Top attractions with precise timings, valid image URLs, descriptions, and their durations.
-Nearby dining options for each attraction, including names, cuisines, price ranges, and valid image URLs.
-Hotel recommendations with the following details:
-Hotel name
-Address
-Price per night
-Valid image URL
-Customer rating
-Ensure the image URLs are reliable and functional by testing for accuracy. Present the output in JSON format as shown below:
- {
-    "trip_name": "",
-    "budget": "",
-    "days": [
-      {
-        "day": "",
-        "title": "",
-        "activities": [
-          {
-            "time": "",
-            "activity": "",
-            "image": "",
-            "description": "",
-            "duration": ""
-          }
-        ]
-      }
-    ],
-    "hotels": [
-      {
-        "name": "",
-        "address": "",
-        "price": "",
-        "image": ""
-      }
-    ]
-  };
-Ensure all images come from reputable sources and are relevant to the specified destinations, attractions, and hotels.
-Avoid broken links (404 errors) by verifying each image before including it in the itinerary.
-If images are not available, provide a placeholder text indicating the absence of an image.`;
+const prompt = `Generate a detailed ${totalDays}-day travel itinerary for a ${budget} budget trip in ${destination}. The trip is planned for ${travelWith}.
+
+Key Parameters:
+- Total Days: ${totalDays}
+- Budget: ${budget}
+- Destination: ${destination}
+- Traveling With: ${travelWith}
+
+Itinerary Guidelines:
+1. Daily Activities:
+   - Provide 3-5 top attractions or activities per day
+   - Include precise timings, descriptions, and durations
+   - Ensure a mix of popular sites and unique local experiences
+   - Verify that suggested activities are open and accessible during the planned visit
+
+2. Dining Recommendations:
+   - Suggest 1-2 nearby dining options for each main activity
+   - Include restaurant names, cuisines, and price ranges ($ to $$$$)
+   - Focus on local specialties and highly-rated establishments
+
+3. Hotel Suggestions:
+   - Recommend 3-5 hotels that fit the specified budget
+   - Provide detailed information including name, address, price per night, and customer rating
+   - Ensure hotels are in safe, convenient locations for tourists
+
+4. Image Considerations:
+   - For all attractions, restaurants, and hotels, include a brief description of what the image should depict
+   - Example: "Image: Panoramic view of the Eiffel Tower at sunset"
+   - Do not include actual URLs, only descriptive placeholders
+
+5. Budget Adherence:
+   - Ensure all suggested activities, dining options, and accommodations align with the specified budget
+   - Provide a mix of free and paid activities to balance the itinerary
+
+6. Local Insights:
+   - Include brief tips about local customs, best times to visit attractions, or money-saving advice
+   - Mention any seasonal events or festivals happening during the visit
+
+Output Format:
+Provide the itinerary in the following JSON format:
+
+{
+  "trip_name": "",
+  "budget": "",
+  "days": [
+    {
+      "day": "",
+      "title": "",
+      "activities": [
+        {
+          "time": "",
+          "activity": "",
+          "image": "",
+          "description": "",
+          "duration": ""
+        }
+      ]
+    }
+  ],
+  "hotels": [
+    {
+      "name": "",
+      "address": "",
+      "price": "",
+      "image": ""
+    }
+  ]
+}
+
+Ensure all information is accurate, up-to-date, and tailored to the specified destination, budget, and traveler preferences. Prioritize creating a balanced, enjoyable, and realistic itinerary that maximizes the travel experience within the given constraints.`;
 
   try {
     const completion = await openai.chat.completions.create({
